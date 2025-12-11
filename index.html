@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time Duration Calculator - Timeculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="manifest" href="favicon/site.webmanifest">
+  <style>
+    :root{
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #0b1720;
+      --muted: #5b6b78;
+      --accent-start: #0ea5a4;
+      --accent-end: #38bdf8;
+      --glass: rgba(10,20,30,0.06);
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(10,18,30,0.06);
+      --max-width: 1100px;
+      --touch: 48px;
+
+      /* buttons unified */
+--btn-start: #1f2937;
+--btn-end: #111827;  
+
+      /* inputs */
+      --input-bg: rgba(255,255,255,1);
+      --input-border: var(--glass);
+    }
+    .dark{
+      --bg: #071423;
+      --card: #071428;
+      --text: #d7eef6;
+      --muted: #9fb0c1;
+      --accent-start: #2dd4bf;
+      --accent-end: #2aa3b2;
+      --glass: rgba(255,255,255,0.06);
+      --shadow: 0 10px 36px rgba(2,6,12,0.6);
+--btn-start: #0f141c;
+--btn-end: #080b10;
+      --input-bg: rgba(255,255,255,0.02);
+      --input-border: rgba(255,255,255,0.06);
+    }
+	.dark button.ghost {
+  color: #e4edf5;
+  border-color: #e4edf5;
+}
+.dark button.ghost:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+footer, footer * {
+  color: var(--muted);
+}
+.dark footer, .dark footer * {
+  color: #071428;
+}
+.theme-btn::before {
+  content: "☀️";
+  font-size: 18px;
+}
+.dark .theme-btn::before {
+  content: "🌙";
+  font-size: 18px;
+}
+.dark select {
+  color: #e5eff7;
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.15);
+}
+.dark select option {
+  background: #0c1624;
+  color: #e5eff7;
+}
+/* === INPUT WRAPPER (tek kaynak: border + bg burada) === */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding-left: 44px;   /* icon için boşluk */
+  padding-right: 48px;  /* stepper için boşluk */
+  border-radius: 8px;
+  background: var(--card, #111826);
+  border: 1px solid var(--input-border, #2a3345);
+  box-sizing: border-box; /* önemli */
+  overflow: hidden;
+}
+
+/* ICON (sol) */
+.input-wrap .input-icon,
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.6;
+  color: var(--muted, #9aa4b2);
+  pointer-events: none;
+}
+
+/* === INPUT (içerik için temiz, border yok) === */
+.input-wrap input,
+.input-wrap input[type="number"] {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;              /* wrapper'ın sağladığı padding yeterli */
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text, #fff);
+  font-size: 15px;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+/* Placeholder rengini belirle */
+.input-wrap input::placeholder {
+  color: var(--muted, #9aa4b2);
+  opacity: 1;
+}
+
+/* === Önbellekli/varsayılan spin butonlarını tamamen kaldır === */
+/* Chrome, Edge, Safari */
+.input-wrap input[type="number"]::-webkit-outer-spin-button,
+.input-wrap input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  display: none;
+}
+
+/* Firefox */
+.input-wrap input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* === CUSTOM STEPPER (sağ) === */
+.stepper {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+.stepper button {
+  width: 28px;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 6px;
+  border: 1px solid var(--input-border, #2a3345);
+  background: transparent;
+  color: var(--text, #fff);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: background .12s ease, color .12s ease;
+}
+
+.stepper button:hover {
+  background: var(--accent, #06b6d4);
+  color: #fff;
+}
+/* INPUT BOX FIX — Text Overflow Sorunsuz */
+.input-wrap {
+  height: 48px !important;         /* daha yüksek kutu */
+  padding-left: 40px !important;   /* ikon için yeterli alan */
+  padding-right: 40px !important;  /* stepper için yeterli alan */
+  box-sizing: border-box !important;
+}
+
+.input-wrap input {
+  font-size: 14px !important;      /* içeride daha fazla alan */
+  line-height: 1.3 !important;     /* taşmayı yok eder */
+  padding: 0 !important;           /* wrapper padding'i yönetiyor */
+  overflow: hidden !important;     /* ihtiyacı olan son darbe */
+  white-space: nowrap !important;  /* tek satırda sabit kalır */
+}
+
+/* Placeholder da taşmasın */
+.input-wrap input::placeholder {
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+}
+
+
+/* Küçük ekranlarda stepper'ı biraz küçült */
+@media (max-width:420px){
+  .stepper { right: 6px; gap:4px; }
+  .stepper button { width:24px; height:16px; font-size:13px; }
+  .input-wrap { padding-right: 42px; padding-left: 40px; }
+}
+
+
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      background:linear-gradient(180deg,var(--bg),#eef6f9);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{max-width:var(--max-width);margin:20px auto;padding:18px}
+
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .brand svg{width:48px;height:48px}
+    .title{font-weight:800;font-size:20px;letter-spacing:0.2px}
+    .subtitle{font-size:12px;color:var(--muted)}
+
+    .controls{display:flex;gap:10px;align-items:center}
+    .theme-btn{width:44px;height:44px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--btn-start),var(--btn-end));color:white;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+    .contact-open{background:linear-gradient(90deg,var(--btn-start),var(--btn-end));color:white;padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+
+    main{display:grid;grid-template-columns:1fr;gap:20px}
+    @media(min-width:1000px){main{grid-template-columns:1fr 340px}}
+
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+    h2{margin:0;font-size:18px}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* form layout */
+    .form-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:720px){ .form-grid.duration{grid-template-columns:repeat(2,1fr)} .form-grid.blocks{grid-template-columns:repeat(4,1fr)} }
+
+    .input-wrap{position:relative}
+    .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;opacity:.95;color:var(--muted)}
+    input[type='date'], input[type='time'], input[type='number'], select, textarea, input[type='text']{
+      width:100%;
+      padding:12px 14px 12px 44px;
+      border-radius:10px;
+      border:1px solid var(--input-border);
+      background:var(--input-bg);
+      color:var(--text);
+      font-size:15px;
+      transition:box-shadow 160ms, border-color 160ms, background 160ms, color 160ms;
+    }
+    input:focus, textarea:focus, select:focus{
+      outline:none;
+      border-color:var(--btn-start);
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      background:var(--input-bg);
+    }
+    textarea{min-height:120px;resize:vertical}
+
+    /* unified buttons */
+    .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+    button.primary{
+      background:linear-gradient(90deg,var(--btn-start),var(--btn-end));
+      border:0;color:white;padding:12px 16px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,0.08);
+    }
+    button.ghost{
+      background:transparent;border:1px solid var(--btn-start);padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--btn-start);font-weight:600;
+    }
+    button.ghost:hover{background:linear-gradient(90deg,var(--btn-start),rgba(255,255,255,0.04));color:white}
+
+    /* results */
+    .result-card{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px;border-radius:12px;border:1px solid var(--input-border);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .big-number{font-weight:800;font-size:20px}
+    .result-pills{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{background:linear-gradient(180deg,var(--btn-start),var(--btn-end));color:white;padding:8px 12px;border-radius:999px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+    .result-meta{font-family:monospace;background:transparent;border-radius:8px;padding:8px;white-space:pre-wrap;font-size:13px}
+    .action-row{display:flex;gap:8px}
+
+    /* ad area */
+    .ad-area{display:flex;align-items:center;justify-content:center;gap:10px;padding:18px;border-radius:12px;border:1px dashed var(--input-border);background:var(--card);color:var(--muted);font-weight:600}
+
+    /* explanation area - separated from calculator */
+    .explanation-area{padding:18px;border-radius:12px;border:1px solid var(--input-border);background:var(--card);color:var(--muted)}
+
+    /* sidebar */
+    aside .card{position:sticky;top:22px}
+    .sidebar-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;border:1px solid var(--input-border);background:var(--card)}
+    .icon{width:46px;height:46px;border-radius:8px;background:transparent;display:flex;align-items:center;justify-content:center;font-size:18px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,12,0.45);display:none;align-items:center;justify-content:center;padding:18px;z-index:120}
+    .modal{background:var(--card);padding:20px;border-radius:14px;width:100%;max-width:520px;box-shadow:var(--shadow);border:1px solid var(--input-border)}
+    .modal .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .modal .close-btn{background:transparent;border:0;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px}
+
+    /* small responsiveness */
+    @media(max-width:520px){
+      .wrap{padding:12px}
+      .theme-btn{width:40px;height:40px}
+      .brand .title{font-size:18px}
+      .input-wrap input, .input-wrap textarea{padding-left:46px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <!-- logo -->
+		<span style="font-size:22px;margin-right:6px">⏳</span>
+        <div>
+          <div class="title">timeculator</div>
+          <div class="subtitle">Professional time tools — Time & Date</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="contactOpen" class="contact-open" aria-haspopup="dialog">Contact</button>
+        <button id="themeToggle" class="theme-btn" aria-label="Toggle theme" title="Toggle theme"></button>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <!-- Time Duration -->
+        <div class="card">
+          <h2>Time Duration Calculator</h2>
+          <p class="muted" style="margin-top:8px">Pick start and end date/time.</p>
+
+          <div style="margin-top:14px" class="form-grid duration">
+            <div>
+              <label style="font-weight:600;margin-bottom:6px;display:block">Start Date</label>
+              <div class="input-wrap">
+                <!-- calendar icon -->
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+                <input id="startDate" type="date" />
+              </div>
+            </div>
+            <div>
+              <label style="font-weight:600;margin-bottom:6px;display:block">Start Time</label>
+              <div class="input-wrap">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <input id="startTime" type="time" />
+              </div>
+            </div>
+
+            <div>
+              <label style="font-weight:600;margin-bottom:6px;display:block">End Date</label>
+              <div class="input-wrap">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+                <input id="endDate" type="date" />
+              </div>
+            </div>
+            <div>
+              <label style="font-weight:600;margin-bottom:6px;display:block">End Time</label>
+              <div class="input-wrap">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <input id="endTime" type="time" />
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">
+            <div class="muted">If a date is empty, today's date is used. Leave time empty to assume 00:00.</div>
+            <label class="muted" style="display:flex;align-items:center;gap:8px">Show seconds <input id="showSeconds" type="checkbox" style="margin-left:6px" /></label>
+          </div>
+
+          <div class="actions">
+            <button id="calcDuration" class="primary">Calculate Duration</button>
+            <button id="clearDuration" class="ghost">Clear</button>
+          </div>
+
+          <div id="durationResult" class="result-card" style="margin-top:14px;display:none">
+            <div>
+              <div class="big-number" id="durationMain">0d 0h 0m</div>
+              <div class="muted" id="durationSub">Detailed breakdown below</div>
+              <div class="result-meta" id="durationMeta" style="margin-top:10px"></div>
+            </div>
+            <div style="text-align:right">
+              <div class="result-pills" id="durationPills"></div>
+              <div class="action-row" style="margin-top:12px">
+                <button id="copyDuration" class="ghost">Copy</button>
+                <button id="shareDuration" class="ghost">Share</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AD BETWEEN -->
+        <div id="ads-between-tools" class="ad-area" style="margin:22px 0">
+          <!-- Responsive ad placeholders -->
+          <div class="muted" style="font-size:15px">Advertising — 728×90 (desktop) / 300×250 (mobile)</div>
+        </div>
+
+       <!-- Time Calculator -->
+<div class="card">
+  <h2>Time Calculator (Block A ± Block B)</h2>
+  <p class="muted" style="margin-top:8px">Enter Day / Hour / Minute / Second for each block, then choose Add or Subtract.</p>
+
+  <div style="margin-top:14px" class="form-grid blocks">
+
+    <!-- A DAYS -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18"></path></svg>
+      <input id="aDays" type="number" inputmode="numeric" min="0" placeholder="Days (A)" />
+      <div class="stepper">
+        <button class="step-up" data-target="aDays">+</button>
+        <button class="step-down" data-target="aDays">−</button>
+      </div>
+    </div>
+
+    <!-- A HOURS -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4"/><path d="M12 18v4"/></svg>
+      <input id="aHours" type="number" inputmode="numeric" min="0" max="23" placeholder="Hours (A)" />
+      <div class="stepper">
+        <button class="step-up" data-target="aHours">+</button>
+        <button class="step-down" data-target="aHours">−</button>
+      </div>
+    </div>
+
+    <!-- A MINUTES -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12v6a2 2 0 0 1-2 2H5"/></svg>
+      <input id="aMinutes" type="number" inputmode="numeric" min="0" max="59" placeholder="Minutes (A)" />
+      <div class="stepper">
+        <button class="step-up" data-target="aMinutes">+</button>
+        <button class="step-down" data-target="aMinutes">−</button>
+      </div>
+    </div>
+
+    <!-- A SECONDS -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/></svg>
+      <input id="aSeconds" type="number" inputmode="numeric" min="0" max="59" placeholder="Seconds (A)" />
+      <div class="stepper">
+        <button class="step-up" data-target="aSeconds">+</button>
+        <button class="step-down" data-target="aSeconds">−</button>
+      </div>
+    </div>
+
+    <!-- OPERATION -->
+    <div style="grid-column:1/-1;margin-top:6px">
+      <label style="font-weight:600;margin-bottom:6px;display:block">Operation</label>
+      <select id="opType2" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text)">
+        <option value="add">Add (A + B)</option>
+        <option value="subtract">Subtract (A − B)</option>
+      </select>
+    </div>
+
+    <!-- B DAYS -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18"></path></svg>
+      <input id="bDays" type="number" inputmode="numeric" min="0" placeholder="Days (B)" />
+      <div class="stepper">
+        <button class="step-up" data-target="bDays">+</button>
+        <button class="step-down" data-target="bDays">−</button>
+      </div>
+    </div>
+
+    <!-- B HOURS -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4"/><path d="M12 18v4"/></svg>
+      <input id="bHours" type="number" inputmode="numeric" min="0" max="23" placeholder="Hours (B)" />
+      <div class="stepper">
+        <button class="step-up" data-target="bHours">+</button>
+        <button class="step-down" data-target="bHours">−</button>
+      </div>
+    </div>
+
+    <!-- B MINUTES -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12v6a2 2 0 0 1-2 2H5"/></svg>
+      <input id="bMinutes" type="number" inputmode="numeric" min="0" max="59" placeholder="Minutes (B)" />
+      <div class="stepper">
+        <button class="step-up" data-target="bMinutes">+</button>
+        <button class="step-down" data-target="bMinutes">−</button>
+      </div>
+    </div>
+
+    <!-- B SECONDS -->
+    <div class="input-wrap">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/></svg>
+      <input id="bSeconds" type="number" inputmode="numeric" min="0" max="59" placeholder="Seconds (B)" />
+      <div class="stepper">
+        <button class="step-up" data-target="bSeconds">+</button>
+        <button class="step-down" data-target="bSeconds">−</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button id="calcTime2" class="primary">Calculate</button>
+    <button id="clearTime2" class="ghost">Clear</button>
+  </div>
+
+  <div id="timeResult" class="result-card" style="margin-top:14px;display:none">
+    <div>
+      <div class="big-number" id="timeMain">0d 0h 0m</div>
+      <div class="muted" id="timeSub">Normalized result below</div>
+      <div class="result-meta" id="timeMeta" style="margin-top:10px"></div>
+    </div>
+    <div style="text-align:right">
+      <div class="result-pills" id="timePills"></div>
+      <div class="action-row" style="margin-top:12px">
+        <button id="copyTime" class="ghost">Copy</button>
+        <button id="shareTime" class="ghost">Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        <!-- Explanation / Notes (now separate) -->
+        <div id="siteNotes" class="explanation-area" style="margin-top:18px">
+          <h1>Time Duration Calculator</h1>
+
+<p>A time duration calculator is a simple tool that helps measure the exact amount of time between two dates or times. <strong>It quickly calculates hours, minutes, and seconds to provide an accurate duration for any period, whether it is minutes apart or spans multiple days.</strong> This makes it useful for everyday tasks like tracking work hours or planning events.</p>
+<p>Many calculators also handle different time formats, such as 12-hour or 24-hour clocks, and manage situations like shifts that stretch past midnight. Users can easily add or subtract time, helping with project planning or payroll calculations without guesswork.</p>
+<p>Having a reliable calculator saves time and reduces mistakes by giving clear and instant results. It is a practical tool for anyone needing precise time tracking or managing schedules efficiently.</p>
+<h3>Key Takeways</h3>
+<ul>
+<li>It calculates exact time differences in hours, minutes, and seconds.</li>
+<li>It supports various time formats and complex situations like overnight shifts.</li>
+<li>It helps improve accuracy and saves time for work and personal tasks.</li>
+</ul>
+
+<h2>What Is a Time Duration Calculator?</h2>
+<p>A time duration calculator measures the exact amount of time between two points. It helps users find differences in hours, minutes, and seconds, saving time and improving accuracy. These tools vary in design and complexity, fitting different needs and use cases.</p>
+<h3>Definition and Purpose</h3>
+<p>A time duration calculator is a digital tool that calculates the time gap between a start and an end point. It shows how much time has passed or will pass, often breaking down the result into hours, minutes, and seconds. This tool is useful in many situations like work shifts, project tracking, or event planning.</p>
+<p>Its main purpose is to avoid errors found in manual calculations. By inputting two times or dates, the calculator quickly provides the exact duration without needing mental math or guesswork. This saves time and reduces mistakes, especially when dealing with overnight shifts or multi-day events.</p>
+<h3>Types of Time Duration Calculators</h3>
+<p>There are different types of time duration calculators designed for specific tasks:</p>
+<ul>
+<li><strong>Simple calculators:</strong> Compute the difference between two times on the same day.</li>
+<li><strong>Date and time calculators:</strong> Calculate durations spanning multiple days, months, or even years.</li>
+<li><strong>Decimal format calculators:</strong> Convert time gaps into decimal hours for billing or payroll.</li>
+<li><strong>Specialized calculators:</strong> Handle complex cases like overnight work shifts or time zones.</li>
+</ul>
+<p>Many online calculators also support formats including hours, minutes, and seconds, often with additional features like countdowns, timers, and conversion tools.</p>
+<h3>Comparison With Manual Calculations</h3>
+<p>Manual calculations of time durations can be complex and prone to errors. It requires careful counting of hours, minutes, and seconds, often needing extra attention for leap years, daylight saving time, or crossing midnight.</p>
+<p>A time duration calculator automates this process. It ensures accuracy by instantly handling all cases that might confuse a person. For example, it can calculate durations that cross midnight or spread over several days without extra input.</p>
+<p>Using a calculator saves time and reduces mistakes, making it a better choice for precise and efficient time tracking compared to manual methods.</p>
+
+<h2>Key Features of Time Duration Calculators</h2>
+<p>Time duration calculators offer precise ways to measure time differences between moments. They provide flexible options for input and output, manage complexities like time zones, and support common date and time formats. These features help users handle varied time-related tasks with accuracy.</p>
+<h3>Supported Time Units</h3>
+<p>Time duration calculators typically work with hours, minutes, and seconds. Some also provide results in decimal hours, making it easier for tasks like payroll or billing. Users can input time in different ways, such as:</p>
+<ul>
+<li><strong>HH:MM<SS></SS></strong> (hours, minutes, seconds)</li>
+<li><strong>Raw minutes</strong></li>
+<li>Text-based formats like <em>1h 5m 20s</em></li>
+</ul>
+<p>This flexibility lets users include or exclude breaks, add or subtract durations, and round results to intervals (like nearest 5 or 15 minutes) depending on their needs. The ability to measure down to the second adds precision for detailed time tracking.</p>
+<h3>Time Zone Handling</h3>
+<p>Advanced time duration calculators adjust for differences between time zones automatically. This helps when calculating durations for users who work across regions or during travel. The tool takes daylight saving time into account, adjusting results accordingly.</p>
+<p>This feature reduces errors in calculating elapsed time when start and end times are in different zones. It also allows users to compare or combine times from locations worldwide without manual conversion or guesswork.</p>
+<h3>Date and Time Formats</h3>
+<p>These calculators support various date and time formats to match user preferences and regional standards. Both 12-hour (with AM/PM) and 24-hour military time are accepted as inputs. Date input supports day, month, year layouts, and can handle ranges spanning multiple days, weeks, or months.</p>
+<p>This versatility allows users to track time for single-day events as well as projects crossing several days. Some calculators also allow including or excluding start and end times, giving control over whether endpoints count in the total duration.</p>
+
+<h2>How to Use a Time Duration Calculator</h2>
+<p>A time duration calculator helps measure the exact gap between two dates or times. It can handle hours, minutes, and even seconds. Users simply enter start and end times, and the tool does the rest, providing clear results for various needs.</p>
+<h3>Step-by-Step Guide</h3>
+<p>To use the calculator, the user first inputs the <strong>start date and time</strong>. Then, they enter the <strong>end date and time</strong>. Many tools allow easy selection from a calendar or time picker.</p>
+<p>After entering both points, the user clicks the "Calculate" button. The calculator instantly shows the duration in days, hours, minutes, and seconds. Some calculators convert the total time into decimal hours, useful for work or billing.</p>
+<p>Advanced calculators handle overnight shifts or durations spanning multiple days automatically. Users can also add or subtract time periods in some versions.</p>
+<h3>Common Use Cases</h3>
+<p>Time duration calculators help in tracking work hours, managing project timelines, or preparing payroll. For example, employees use it to find how many hours they worked each day.</p>
+<p>Project managers check the exact time spent on tasks. This improves scheduling and ensures deadlines stay on track.</p>
+<p>The calculator also assists in billing clients by showing precise work duration. Event planners use it for accurate scheduling between events. People use it for counting down to specific dates, too.</p>
+<h3>Examples of Duration Calculations</h3>
+<p>For example, calculating work hours from 9:00 AM to 5:30 PM shows 8 hours and 30 minutes. Another use is determining the gap between December 1 and December 11, which is 10 days.</p>
+<p>A calculator can show the difference between 11:00 PM and 2:00 AM the next day, accounting for crossing midnight. It can also add a time span like 2 hours and 45 minutes to a start time to find an end time quickly.</p>
+<p>These examples show how the calculator simplifies tasks that require exact time measurements.</p>
+
+<h2>Benefits of Using a Time Duration Calculator</h2>
+<p>A time duration calculator helps users quickly find the exact time between two points. It simplifies complex calculations and improves how time data is handled in daily tasks.</p>
+<h3>Efficiency and Accuracy</h3>
+<p>Using a time duration calculator speeds up the process of measuring time intervals. Instead of doing long manual math, the tool delivers instant results in hours, minutes, and seconds. This saves time, especially when dealing with multiple shifts or tasks that span several days.</p>
+<p>The calculator handles tricky cases like overnight shifts or times crossing midnight without confusion. This makes it useful for payroll, project tracking, and scheduling. Users can also input seconds or handle different time zones, which improves precision.</p>
+<p>By automating calculations, the calculator reduces the need for repeated work and allows users to focus on other important tasks.</p>
+<h3>Error Reduction</h3>
+<p>Manual time calculations often lead to mistakes, especially with complex time formats or long durations. A time duration calculator minimizes errors by using precise algorithms to measure exact differences between start and end times.</p>
+<p>It can subtract breaks or pauses automatically, which helps in calculating paid work hours or PTO accurately. By avoiding human errors, the tool ensures reliable data for billing and reporting.</p>
+<p>The calculator also verifies input formats and time zones, preventing common mistakes like mixing AM and PM or misreading dates. This level of control increases confidence in the results and reduces the risk of costly errors.</p>
+
+<h2>What is a Time Calculator</h2>
+<p>A <strong>time calculator</strong> is a tool that helps measure the difference between two times or dates. It can find the exact amount of time passed, usually shown in hours, minutes, and seconds. People use it to track work hours, calculate project durations, or figure out time spent on tasks.</p>
+<p>This tool can also add or subtract time from a starting point. For example, if someone wants to know what time it will be after adding 3 hours and 45 minutes, the time calculator provides an answer quickly. It works with both single moments and multi-day periods.</p>
+<p>Time calculators often include features such as:</p>
+<ul>
+<li>Handling cross-midnight periods (like shifts starting before midnight and ending the next day)</li>
+<li>Converting time into decimal formats for billing or payroll</li>
+<li>Showing detailed results in years, months, days, and smaller units</li>
+</ul>
+<p>They are useful in many fields, from business to everyday life. For instance, employees can use them to log work hours accurately. Managers can track how long projects or tasks take. The tool simplifies complex time math, making calculations faster and less prone to mistakes.</p>
+<p>In short, a time calculator is a versatile tool designed to handle different types of time-related problems. It provides clear, precise results to help people manage and understand time better.</p>
+
+<h2>How to Use Time Calculator</h2>
+<p>To use a time duration calculator, a user typically starts by entering a <strong>start time</strong> and an <strong>end time</strong>. This can include dates if the calculation covers multiple days. The tool then finds the difference between these two points.</p>
+<p>Users can also add or subtract time. For example, they might add hours and minutes to a given start time to find a future time, or subtract to find a past time. This feature helps with planning or tracking time precisely.</p>
+<p>Most calculators handle special cases like <strong>overnight shifts</strong> or times that cross midnight automatically. This means no manual adjustments are needed when work or events span two calendar days.</p>
+<p>Here is a simple list of what users can do with a time calculator:</p>
+<ul>
+<li>Calculate the exact time between two dates or times</li>
+<li>Add or subtract hours, minutes, and seconds</li>
+<li>Track work hours or project time</li>
+<li>Convert time into decimal format for billing or payroll purposes</li>
+</ul>
+<p>Some tools also let users perform multiplication or division with time values. This can be useful for scaling work hours or averaging durations.</p>
+<p>Many online calculators display results broken down into days, hours, minutes, and seconds. This clear format helps users understand the total duration easily.</p>
+        </div>
+
+      </section>
+
+      <!-- Sidebar -->
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Quick Tools & Ads</h3>
+          <div style="display:grid;gap:12px">
+            <div class="sidebar-item">
+              <div class="icon">⏱️</div>
+              <div style="flex:1">
+                <div style="font-weight:700">Quick Seconds</div>
+                <div class="muted" style="font-size:13px">Apply seconds to Block A quickly.</div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <input id="quickSeconds" type="number" placeholder="seconds" style="padding:10px;border-radius:8px;border:1px solid var(--input-border);flex:1" />
+                  <button id="quickAdd" class="primary">Apply</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sidebar-item">
+              <div class="icon">📤</div>
+              <div style="flex:1">
+                <div style="font-weight:700">Export</div>
+                <div class="muted" style="font-size:13px">Copy or print results.</div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button id="copyAll" class="ghost">Copy All</button>
+                  <button id="printPage" class="ghost">Print</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sidebar-item">
+              <div class="icon">📢</div>
+              <div style="flex:1">
+                <div style="font-weight:700">Ad Slots</div>
+                <div class="muted" style="font-size:13px">Placeholders for ad scripts.</div>
+                <div style="display:grid;gap:8px;margin-top:8px">
+                  <div style="padding:8px;border:1px dashed var(--input-border);border-radius:8px;text-align:center">300×250</div>
+                  <div style="padding:8px;border:1px dashed var(--input-border);border-radius:8px;text-align:center">728×90</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:22px;text-align:center;color:var(--muted)">
+      <div>© <span id="curYear"></span> Timeculator</div>
+    </footer>
+  </div>
+
+  <!-- CONTACT MODAL -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="contactTitle">
+      <div class="modal-head" style="margin-bottom:12px">
+        <div style="display:flex;gap:12px;align-items:center">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5l-4-4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <div>
+            <div id="contactTitle" style="font-weight:700">Contact Us</div>
+            <div class="muted" style="font-size:13px">We typically reply within 24 hours</div>
+          </div>
+        </div>
+        <button id="closeModal" class="close-btn" aria-label="Close modal">✕</button>
+      </div>
+
+      <!-- Formspree form — replace yourFormID -->
+      <form id="contactForm" action="https://formspree.io/f/yourFormID" method="POST" style="display:grid;gap:10px">
+        <label class="muted" style="font-weight:600;font-size:13px">Name</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M4 21v-2a4 4 0 0 1 3-3.87"/><circle cx="12" cy="7" r="4"/></svg>
+          <input id="contactName" name="name" type="text" placeholder="Your name" required />
+        </div>
+
+        <label class="muted" style="font-weight:600;font-size:13px">Email</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v16H4z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <input id="contactEmail" name="email" type="email" placeholder="you@example.com" required />
+        </div>
+
+        <label class="muted" style="font-weight:600;font-size:13px">Message</label>
+        <textarea id="contactMessage" name="message" rows="5" placeholder="How can we help?" required style="padding-left:14px"></textarea>
+
+        <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end">
+          <div id="formspreeStatus" class="form-status muted" aria-live="polite"></div>
+          <button type="submit" class="primary">Send message</button>
+          <button type="button" id="cancelModal" class="ghost">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // CONFIG — replace with your Formspree ID
+    const CONFIG = { formspreeEndpoint: 'https://formspree.io/f/yourFormID' }
+
+    // short id helper
+    const $ = id => document.getElementById(id)
+    const pad = n => String(n).padStart(2,'0')
+    const nowIso = ()=>{ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()) }
+
+    // THEME
+    const themeToggle = $('themeToggle')
+    function currentTheme(){ return localStorage.getItem('timeculator-theme') || 'light' }
+    function applyTheme(t){
+      if(t==='dark') document.documentElement.classList.add('dark')
+      else document.documentElement.classList.remove('dark')
+      localStorage.setItem('timeculator-theme', t)
+      // icon
+      themeToggle.innerHTML = t==='dark'
+        ? '<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"><circle cx=\"12\" cy=\"12\" r=\"5\"></circle><line x1=\"12\" y1=\"1\" x2=\"12\" y2=\"3\"></line></svg>'
+        : '<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"><path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"/></svg>';
+      // ensure selects readable
+      const selects = document.querySelectorAll('select')
+      selects.forEach(s => { s.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text') || 'inherit' })
+    }
+    applyTheme(currentTheme())
+    themeToggle.addEventListener('click', ()=> applyTheme(currentTheme()==='dark' ? 'light' : 'dark'))
+
+    // set year
+    $('curYear') && ($('curYear').textContent = new Date().getFullYear())
+
+    // init date fields
+    $('startDate') && ($('startDate').value = nowIso())
+    $('endDate') && ($('endDate').value = nowIso())
+
+    /* ------------- Duration calculation ------------- */
+    $('calcDuration').addEventListener('click', ()=>{
+      const sd = $('startDate').value || nowIso()
+      const st = $('startTime').value || '00:00'
+      const ed = $('endDate').value || nowIso()
+      const et = $('endTime').value || '00:00'
+      const showSeconds = $('showSeconds').checked
+
+      const start = new Date(sd + 'T' + st + ':00')
+      const end = new Date(ed + 'T' + et + ':00')
+      let diffMs = end - start
+      if(diffMs < 0 && sd === ed) diffMs += 24*3600*1000
+      const sign = diffMs < 0 ? '-' : ''
+      const abs = Math.abs(diffMs)
+      let secs = Math.floor(abs/1000)
+      const days = Math.floor(secs/86400); secs %= 86400
+      const hours = Math.floor(secs/3600); secs %= 3600
+      const minutes = Math.floor(secs/60); const seconds = secs%60
+
+      $('durationResult').style.display = 'grid'
+      $('durationMain').textContent = `${sign}${days}d ${hours}h ${minutes}m${showSeconds?(' '+seconds+'s'):''}`
+      $('durationSub').textContent = `From ${start.toLocaleString()} to ${end.toLocaleString()}`
+      $('durationMeta').textContent = `Start: ${start.toString()}\nEnd: ${end.toString()}\nTotal seconds: ${Math.floor(Math.abs(diffMs)/1000)}`
+
+      const pills = $('durationPills'); pills.innerHTML = ''
+      if(days){ const p=document.createElement('span'); p.className='pill'; p.textContent = days + 'd'; pills.appendChild(p) }
+      { const p=document.createElement('span'); p.className='pill'; p.textContent = hours + 'h'; pills.appendChild(p) }
+      { const p=document.createElement('span'); p.className='pill'; p.textContent = minutes + 'm'; pills.appendChild(p) }
+      if(showSeconds){ const p=document.createElement('span'); p.className='pill'; p.textContent = seconds + 's'; pills.appendChild(p) }
+    })
+
+    $('clearDuration').addEventListener('click', ()=>{ $('startTime').value=''; $('endTime').value=''; $('durationResult').style.display='none' })
+
+    /* ------------- Blocks calculation ------------- */
+    $('calcTime2').addEventListener('click', ()=>{
+      const n = id => Number($(id).value||0)
+      const aTotal = ((n('aDays')*24 + n('aHours'))*60 + n('aMinutes'))*60 + n('aSeconds')
+      const bTotal = ((n('bDays')*24 + n('bHours'))*60 + n('bMinutes'))*60 + n('bSeconds')
+      const op = $('opType2').value
+      let res = op === 'add' ? aTotal + bTotal : aTotal - bTotal
+      const sign = res < 0 ? '-' : ''
+      res = Math.abs(res)
+      let secs = res
+      const days = Math.floor(secs/86400); secs %= 86400
+      const hours = Math.floor(secs/3600); secs %= 3600
+      const minutes = Math.floor(secs/60); const seconds = secs%60
+
+      $('timeResult').style.display = 'grid'
+      $('timeMain').textContent = `${sign}${days}d ${hours}h ${minutes}m ${seconds}s`
+      $('timeSub').textContent = `A ${op === 'add' ? '+' : '-'} B = result`
+      $('timeMeta').textContent = `Result normalized: ${days}d ${hours}h ${minutes}m ${seconds}s`
+
+      const pills = $('timePills'); pills.innerHTML = ''
+      if(days){ const p=document.createElement('span'); p.className='pill'; p.textContent = days + 'd'; pills.appendChild(p) }
+      { const p=document.createElement('span'); p.className='pill'; p.textContent = hours + 'h'; pills.appendChild(p) }
+      { const p=document.createElement('span'); p.className='pill'; p.textContent = minutes + 'm'; pills.appendChild(p) }
+      if(seconds){ const p=document.createElement('span'); p.className='pill'; p.textContent = seconds + 's'; pills.appendChild(p) }
+    })
+
+    $('clearTime2').addEventListener('click', ()=>{ ['aDays','aHours','aMinutes','aSeconds','bDays','bHours','bMinutes','bSeconds'].forEach(id=>$(id).value=''); $('timeResult').style.display='none' })
+
+    /* ------------- Copy / Share / Quick ------------- */
+    $('copyDuration').addEventListener('click', ()=>{ navigator.clipboard.writeText($('durationMeta').textContent).then(()=>alert('Duration copied')) })
+    $('shareDuration').addEventListener('click', async ()=>{ const txt = $('durationMeta').textContent; if(navigator.share){ try{ await navigator.share({title:'Duration result',text:txt}); }catch(e){} } else { navigator.clipboard.writeText(txt).then(()=>alert('Copied')) } })
+    $('copyTime').addEventListener('click', ()=>{ navigator.clipboard.writeText($('timeMeta').textContent).then(()=>alert('Time result copied')) })
+    $('shareTime').addEventListener('click', async ()=>{ const txt = $('timeMeta').textContent; if(navigator.share){ try{ await navigator.share({title:'Time result',text:txt}); }catch(e){} } else { navigator.clipboard.writeText(txt).then(()=>alert('Copied')) } })
+
+    $('quickAdd').addEventListener('click', ()=>{ const s = Number($('quickSeconds').value||0); const m = Math.floor(s/60); $('aDays').value=0; $('aHours').value=0; $('aMinutes').value=m; $('aSeconds').value=s%60; $('opType2').value='add'; $('calcTime2').click() })
+
+    $('copyAll').addEventListener('click', ()=>{ const parts=[]; if($('durationMain').textContent) parts.push('Duration: '+$('durationMain').textContent); if($('timeMain').textContent) parts.push('Time: '+$('timeMain').textContent); const txt = parts.join('\n') || 'No results'; navigator.clipboard.writeText(txt).then(()=>alert('All results copied')) })
+    $('printPage').addEventListener('click', ()=>window.print())
+
+    /* ------------- Modal + Formspree AJAX ------------- */
+    const modal = $('modalBackdrop')
+    $('contactOpen').addEventListener('click', ()=>{ modal.classList.add('active'); modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); $('formspreeStatus') && ($('formspreeStatus').textContent = '') })
+    $('closeModal').addEventListener('click', ()=>{ modal.classList.remove('active'); modal.style.display='none'; modal.setAttribute('aria-hidden','true') })
+    $('cancelModal').addEventListener('click', ()=>{ modal.classList.remove('active'); modal.style.display='none'; modal.setAttribute('aria-hidden','true') })
+
+    const contactForm = $('contactForm')
+    contactForm.addEventListener('submit', async (e)=>{
+      e.preventDefault()
+      const statusEl = $('formspreeStatus')
+      statusEl.textContent = 'Sending...'
+      const formData = new FormData(contactForm)
+      const endpoint = contactForm.getAttribute('action') || CONFIG.formspreeEndpoint
+      if(endpoint.includes('yourFormID')){
+        statusEl.textContent = 'Please replace the Formspree form ID in the code (yourFormID). Submission disabled.'
+        return
+      }
+      try{
+        const res = await fetch(endpoint, { method:'POST', body: formData, headers:{ 'Accept':'application/json' } })
+        if(res.ok){ statusEl.textContent = 'Message sent ✓'; contactForm.reset(); setTimeout(()=>{ modal.classList.remove('active'); modal.style.display='none' },1200) }
+        else { const data = await res.json().catch(()=>null); statusEl.textContent = data && data.error ? 'Error: '+data.error : 'Submission failed' }
+      }catch(err){ statusEl.textContent = 'Network error — try again' }
+    })
+
+    // accessibility: close modal with esc
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ modal.classList.remove('active'); modal.style.display='none' } })
+	
+	document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("step-up")) {
+    const id = e.target.dataset.target;
+    const input = document.getElementById(id);
+    input.stepUp();
+    input.dispatchEvent(new Event("input"));
+  }
+
+  if (e.target.classList.contains("step-down")) {
+    const id = e.target.dataset.target;
+    const input = document.getElementById(id);
+    input.stepDown();
+    input.dispatchEvent(new Event("input"));
+  }
+});
+
+  </script>
+</body>
+</html>
